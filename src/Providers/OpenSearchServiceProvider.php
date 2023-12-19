@@ -38,7 +38,8 @@ class OpenSearchServiceProvider extends ServiceProvider
                 ->setHosts(config('opensearch.client.hosts'))
                 ->setSigV4Region(config('opensearch.client.sigV4Region'))
                 ->setSigV4Service(config('opensearch.client.sigV4Service'))
-                ->setSigV4CredentialProvider(CredentialProvider::defaultProvider());
+                ->setSigV4CredentialProvider(CredentialProvider::defaultProvider())
+                ->build();
         });
 
         Builder::macro('cursorPaginate', function (int $perPage = null, string $cursorName = 'cursor', $cursor = null): CursorPaginator {
