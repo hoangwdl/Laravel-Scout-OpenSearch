@@ -33,13 +33,24 @@ class OpenSearchServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(Client::class, function () {
-            // return ClientBuilder::fromConfig(config('opensearch.client'));
-            return (new ClientBuilder())
-                ->setHosts(config('opensearch.client.hosts'))
-                ->setSigV4Region(config('opensearch.client.sigV4Region'))
-                ->setSigV4Service(config('opensearch.client.sigV4Service'))
-                ->setSigV4CredentialProvider(CredentialProvider::defaultProvider())
-                ->build();
+            if (config('opensearch.env') == 'local') {
+                return (new ClientBuilder())
+                    ->setHosts(config('opensearch.client.hosts'))
+                    ->setBasicAuthentication(
+                        config('opensearch.client.basicAuthentication')[0],
+                        config('opensearch.client.basicAuthentication')[1]
+                    )
+                    ->setSSLVerification(false)
+                    ->build();
+            } else {
+                // return ClientBuilder::fromConfig(config('opensearch.client'));
+                return (new ClientBuilder())
+                    ->setHosts(config('opensearch.client.hosts'))
+                    ->setSigV4Region(config('opensearch.client.sigV4Region'))
+                    ->setSigV4Service(config('opensearch.client.sigV4Service'))
+                    ->setSigV4CredentialProvider(CredentialProvider::defaultProvider())
+                    ->build();
+            }
         });
 
         Builder::macro('cursorPaginate', function (int $perPage = null, string $cursorName = 'cursor', $cursor = null): CursorPaginator {
